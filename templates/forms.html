@@ -1,0 +1,65 @@
+{% extends 'index.html' %}
+
+
+{% block content %}
+
+
+<div class="adminx-main-content form-admin-content">
+    <div class="container-fluid">
+        <!-- BreadCrumb -->
+        {% comment %}
+        <nav aria-label="breadcrumb" role="navigation">
+            <ol class="breadcrumb adminx-page-breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+            </ol>
+        </nav>
+        {% endcomment %}
+
+        {% comment %}
+        <div class="pb-3">
+            <h1>Формы</h1>
+        </div>
+        {% endcomment %}
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="accordion" id="accordionExample">
+                            <h2 class="mb-4">Формы</h2>
+                            {% for chapter in chapters %}
+                            <div class="card">
+                                <div class="card-header font-weight-bold" id="headingTwo">
+                                    <a href="#" data-toggle="collapse" data-target="#{{ chapter.id }}"
+                                       aria-expanded="true" aria-controls="{{ chapter.id }}" class="collapsed">
+                                        <div class="row">
+                                            <div class="col form-item">
+                                                {{ chapter.name }}
+                                            </div>
+                                            <div class="col-auto collapse-icon"></div>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div id="{{ chapter.id }}" class="collapse" aria-labelledby="headingOne"
+                                     data-parent="#accordionExample">
+                                    <div class="list-group">
+                                        {% for child in chapter.child %}
+                                        <a href="/forms/{{ child.id }}"
+                                           class="list-group-item list-group-item-action form-item">({{ child.number_f }}) {{ child.name }}</a>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% block worksheet %}
+            {% endblock worksheet %}
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

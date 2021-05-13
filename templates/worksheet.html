@@ -1,0 +1,37 @@
+{% extends 'forms.html' %}
+
+
+{% block worksheet %}
+<div class="col-md-6">
+    <!-- Table with border -->
+    <div class="card mb-grid">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="card-header-title">{{ wrks_title }}</div>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered mb-0 form-table wrapbox">
+                <thead>
+                {% for els in wrks_cols %}
+                <tr>
+                    {% for el in els %}
+                    <th scope="col" colspan="{{ el.colspan }}" rowspan="{{ el.rowspan }}">{{ el.id_header }}</th>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+                </thead>
+                <tbody>
+                {% for el in wrks_rows %}
+                <tr>
+                    {% for it in el %}
+                    <th scope="row" colspan="{{ it.colspan }}">{{ it.value }}</th>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- // Table with border -->
+</div>
+{% endblock %}
+

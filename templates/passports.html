@@ -1,0 +1,171 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+{% block content %}
+
+
+<div class="adminx-main-content">
+    <div class="container-fluid">
+
+        <div class="pb-3">
+            <h1>Паспорта</h1>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="card mb-grid">
+                    <div class="table-responsive-md">
+                        <div id="DataTables_Table_0_wrapper"
+                             class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <table class="table table-actions table-striped table-hover mb-0 dataTable no-footer"
+                                           data-table="" id="DataTables_Table_0" role="grid"
+                                           aria-describedby="DataTables_Table_0_info">
+                                        <thead>
+                                        <tr role="row">
+                                            <th scope="col" class="sorting_asc" tabindex="0"
+                                                aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-sort="ascending" aria-label=": activate to sort column descending"
+                                                style="width: 17px;">
+                                                <label class="custom-control custom-checkbox m-0 p-0">
+                                                    <input type="checkbox"
+                                                           class="custom-control-input table-select-all">
+                                                    <span class="custom-control-indicator"></span>
+                                                </label>
+                                            </th>
+                                            <th scope="col" class="sorting" tabindex="0"
+                                                aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="UUID: activate to sort column ascending"
+                                                style="width: 121px;">UUID
+                                            </th>
+                                            <th scope="col" class="sorting" tabindex="0"
+                                                aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="None: activate to sort column ascending"
+                                                style="width: 115px;">//
+                                            </th>
+                                            <th scope="col" class="sorting" tabindex="0"
+                                                aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="None: activate to sort column ascending"
+                                                style="width: 114px;">//
+                                            </th>
+                                            <th scope="col" class="sorting" tabindex="0"
+                                                aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Data: activate to sort column ascending"
+                                                style="width: 154px;">Data
+                                            </th>
+                                            <th scope="col" class="sorting_disabled" rowspan="1" colspan="1"
+                                                aria-label="Actions" style="width: 105px;">Actions
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+
+
+                                        {% for el in passports_data %}
+                                        <tr role="row" class="even">
+
+                                            <th scope="row" class="sorting_1">
+                                                <label class="custom-control custom-checkbox m-0 p-0">
+                                                    <input type="checkbox"
+                                                           class="custom-control-input table-select-row">
+                                                    <span class="custom-control-indicator"></span>
+                                                </label>
+                                            </th>
+
+
+                                            <td>{{ el.id }}</td>
+                                            <td>-</td>
+                                            <td>-</td>
+                                            <td>{{ el.data }}</td>
+                                            <td>
+                                                <a href="/passports/{{ el.id }}" class="btn btn-sm btn-primary"
+                                                   data-toggle="tooltip"
+                                                   title="View">View</a>
+                                                <a href="#" class="btn btn-sm btn-danger" data-toggle="tooltip"
+                                                   title="Delete">Delete</a>
+                                            </td>
+
+                                        </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            {% comment %} <div class="row">
+                                <div class="col-sm-12 col-md-5">
+                                    <div class="dataTables_info" id="DataTables_Table_0_info" role="status"
+                                         aria-live="polite">Showing 1 to 10 of 47 entries
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 col-md-7">
+                                    <div class="dataTables_paginate paging_simple_numbers"
+                                         id="DataTables_Table_0_paginate">
+                                        <ul class="pagination">
+                                            <li class="paginate_button page-item previous disabled"
+                                                id="DataTables_Table_0_previous"><a href="#"
+                                                                                    aria-controls="DataTables_Table_0"
+                                                                                    data-dt-idx="0" tabindex="0"
+                                                                                    class="page-link">Previous</a></li>
+                                            <li class="paginate_button page-item active"><a href="#"
+                                                                                            aria-controls="DataTables_Table_0"
+                                                                                            data-dt-idx="1" tabindex="0"
+                                                                                            class="page-link">1</a></li>
+                                            <li class="paginate_button page-item "><a href="#"
+                                                                                      aria-controls="DataTables_Table_0"
+                                                                                      data-dt-idx="2" tabindex="0"
+                                                                                      class="page-link">2</a></li>
+                                            <li class="paginate_button page-item "><a href="#"
+                                                                                      aria-controls="DataTables_Table_0"
+                                                                                      data-dt-idx="3" tabindex="0"
+                                                                                      class="page-link">3</a></li>
+                                            <li class="paginate_button page-item "><a href="#"
+                                                                                      aria-controls="DataTables_Table_0"
+                                                                                      data-dt-idx="4" tabindex="0"
+                                                                                      class="page-link">4</a></li>
+                                            <li class="paginate_button page-item "><a href="#"
+                                                                                      aria-controls="DataTables_Table_0"
+                                                                                      data-dt-idx="5" tabindex="0"
+                                                                                      class="page-link">5</a></li>
+                                            <li class="paginate_button page-item next" id="DataTables_Table_0_next"><a
+                                                    href="#" aria-controls="DataTables_Table_0" data-dt-idx="6"
+                                                    tabindex="0" class="page-link">Next</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div> {% endcomment %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+
+{% block scripts %}
+<script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'js/dataTables.bootstrap4.min.js' %}"></script>
+<script>
+    $(document).ready(function () {
+        var table = $('[data-table]').DataTable({
+            "columns": [
+                null,
+                null,
+                null,
+                null,
+                null,
+                {"orderable": false}
+            ]
+        });
+
+        /* $('.form-control-search').keyup(function(){
+          table.search($(this).val()).draw() ;
+        }); */
+    });
+</script>
+{% endblock scripts %}
