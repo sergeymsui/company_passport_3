@@ -61,3 +61,11 @@ class PassportIDConcreteView(View):
                                                   "passport_uuid": uuid,
                                                   })
 
+
+class PasslortLoadView(View):
+    def get(self, request):
+        if 'list' in request.POST:
+            print('LOL')
+        else:
+            print(request.FILES)
+        return render(request, "pload.html");

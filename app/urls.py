@@ -9,4 +9,8 @@ urlpatterns = [
     path('passports', views.PassportsView.as_view()),
     path('passports/<str:uuid>/<str:uuidp>', views.PassportIDConcreteView.as_view()),
     path('passports/<str:uuid>', views.PassportIDView.as_view()),
+    path('load', views.PasslortLoadView.as_view())
 ]
+
+
+

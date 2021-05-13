@@ -1,0 +1,63 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+{% block content %}
+
+
+<div class="adminx-main-content">
+    <div class="container-fluid">
+
+    
+        <div class="pb-3">
+            <h1>Добавить новый</h1>
+        </div>
+
+        <div class="card mb-grid">
+                  <div class="card-header">
+                    <div class="card-header-title">Конвертация нового паспорта</div>
+                  </div>
+                  <div class="card-body">
+                    <p>
+                      The example below uses a flexbox utility to vertically center the contents and changes <code class="highlighter-rouge">.col</code> to <code class="highlighter-rouge">.col-auto</code> so that your columns only take up as much space as needed. Put another way, the column sizes itself based on the contents.
+                    </p>
+                    <form id="needs-validation" novalidate="">
+                      <div class="form-row">
+                        <div class="col-md-6 mb-3">
+                          {% comment %} <label class="form-label" for="validationCustom01">First name</label> {% endcomment %}
+                          <div class="custom-file">
+                      <input type="file" class="custom-file-input" id="customFile" name="list">
+                      <label class="custom-file-label" for="customFile" id="fileLabel">Choose file</label>
+                    </div>
+                        </div>
+                      </div>
+                      <button class="btn btn-primary mr-2" type="submit">Submit form</button>
+                      <small class="text-muted">
+                        Click submit to test validation feature
+                      </small>
+                    </form>
+                  </div>
+                </div>
+        
+
+    {% comment %} =========================================== {% endcomment %}
+
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+$("#customFile").change(function() {
+  filename = this.files[0].name
+  console.log(filename)
+  
+  document.getElementById('fileLabel').innerHTML = filename
+});
+
+</script>
+{% endblock scripts %} 
+

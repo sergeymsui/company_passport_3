@@ -8,9 +8,31 @@
 <div class="adminx-main-content">
     <div class="container-fluid">
 
+        {% comment %}
         <div class="pb-3">
             <h1>Паспорта</h1>
         </div>
+        {% endcomment %}
+
+        <div class="card-header">
+            <div class="media align-items-center">
+                <div class="media-body">
+                    <h2 class="card-title">Паспорта</h2>
+                </div>
+                <div class="media-right">
+                    {% comment %} <a class="btn btn-sm btn-primary" href="#">Quiz results</a> {% endcomment %}
+                    <a href="#" class="btn btn-labeled-right btn-primary mr-2">
+                      <span class="btn-label">
+                        <i class="fas fa-plus"></i>
+                      </span>
+                        <span class="btn-text">
+                        Добавить
+                      </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
 
         <div class="row">
             <div class="col">
@@ -93,7 +115,8 @@
                                     </table>
                                 </div>
                             </div>
-                            {% comment %} <div class="row">
+                            {% comment %}
+                            <div class="row">
                                 <div class="col-sm-12 col-md-5">
                                     <div class="dataTables_info" id="DataTables_Table_0_info" role="status"
                                          aria-live="polite">Showing 1 to 10 of 47 entries
@@ -134,7 +157,8 @@
                                         </ul>
                                     </div>
                                 </div>
-                            </div> {% endcomment %}
+                            </div>
+                            {% endcomment %}
                         </div>
                     </div>
                 </div>
