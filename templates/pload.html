@@ -21,19 +21,19 @@
                     <p>
                       The example below uses a flexbox utility to vertically center the contents and changes <code class="highlighter-rouge">.col</code> to <code class="highlighter-rouge">.col-auto</code> so that your columns only take up as much space as needed. Put another way, the column sizes itself based on the contents.
                     </p>
-                    <form id="needs-validation" novalidate="">
+                    <form id="formElem" novalidate="">{% csrf_token %}
                       <div class="form-row">
                         <div class="col-md-6 mb-3">
                           {% comment %} <label class="form-label" for="validationCustom01">First name</label> {% endcomment %}
                           <div class="custom-file">
                       <input type="file" class="custom-file-input" id="customFile" name="list">
-                      <label class="custom-file-label" for="customFile" id="fileLabel">Choose file</label>
+                      <label class="custom-file-label" for="customFile" id="fileLabel">Выберите файл</label>
                     </div>
                         </div>
                       </div>
-                      <button class="btn btn-primary mr-2" type="submit">Submit form</button>
+                      <button class="btn btn-primary mr-2" type="submit">Загрузка</button>
                       <small class="text-muted">
-                        Click submit to test validation feature
+                        Нажмите на кнопку для загрузки и конвертациии пасопрта
                       </small>
                     </form>
                   </div>
@@ -50,6 +50,21 @@
 
 {% block scripts %}
 <script>
+
+formElem.onsubmit = async (e) => {
+    e.preventDefault();
+
+    let response = await fetch('search', {
+      method: 'POST',
+      body: new FormData(formElem)
+    });
+
+    let result = await response.json();
+
+    alert(result.message);
+
+    console.log("LOL 123");
+  };
 
 $("#customFile").change(function() {
   filename = this.files[0].name

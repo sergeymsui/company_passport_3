@@ -1,3 +1,11 @@
+
+from company_passport.settings import DEFAULT_FILE_DIRECTORY
+import os
+from django.conf import settings
+
+from django.core.files.storage import default_storage
+
+from django.http.response import Http404, HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.views.generic import ListView
 from django.views.generic.base import View
@@ -69,3 +77,20 @@ class PasslortLoadView(View):
         else:
             print(request.FILES)
         return render(request, "pload.html");
+
+
+from django.core.files.storage import FileSystemStorage
+# from .settings import DEFAULT_FILE_DIRECTORY
+
+
+def loadPassport(request):
+    if request.method == 'POST':
+        for filename, file in request.FILES.items():
+            print(filename, file, type(file))
+            # file_name = default_storage.save(filename, file)
+            fs = FileSystemStorage(location=DEFAULT_FILE_DIRECTORY) #defaults to   MEDIA_ROOT  
+            filename = fs.save(file.name, file)
+            file_url = fs.url(file.name)
+    else:
+        print("This is NOT request")
+    return HttpResponse("Hello, World")
