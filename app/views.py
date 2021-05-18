@@ -29,8 +29,8 @@ class FormsView(View):
 
 class PassportsView(View):
     def get(self, request):
-        p = Parser()
-        p.parse()
+        # p = Parser()
+        # p.parse()
 
         passports = Passports()
         passports_data = passports.get()
@@ -82,6 +82,7 @@ class PasslortLoadView(View):
 from django.core.files.storage import FileSystemStorage
 # from .settings import DEFAULT_FILE_DIRECTORY
 
+import json
 
 def loadPassport(request):
     if request.method == 'POST':
@@ -91,6 +92,9 @@ def loadPassport(request):
             fs = FileSystemStorage(location=DEFAULT_FILE_DIRECTORY) #defaults to   MEDIA_ROOT  
             filename = fs.save(file.name, file)
             file_url = fs.url(file.name)
+
     else:
         print("This is NOT request")
-    return HttpResponse("Hello, World")
+    
+    dumps = json.dumps({"json":"obj"})
+    return HttpResponse(dumps);
