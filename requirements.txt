@@ -1,0 +1,7 @@
+-r app/requirements.txt
+django==3.2.3
+pillow==8.2.0
+psycopg2==2.8.6
+xlrd==2.0.1
+celery
+redis==3.5.3

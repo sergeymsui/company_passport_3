@@ -16,9 +16,11 @@ from django.http import JsonResponse
 
 from .domain import Chapters, Worksheets, Parser, Passports, PassportIDConcrete
 
+from .tasks import go_to_sleep
 
 class IndexView(View):
     def get(self, request):
+        go_to_sleep.delay(5)
         return render(request, "index.html", {})
 
 
@@ -117,3 +119,8 @@ def get_progress(request):
     update()
     print('counter = ', counter)
     return HttpResponse(json.dumps(response_data), content_type='application/json')
+
+
+
+
+
