@@ -6,43 +6,58 @@
 
 
 <div class="adminx-main-content">
-    <div class="container-fluid">
+  <div class="container-fluid">
 
-    
-        <div class="pb-3">
-            <h1>Добавить новый</h1>
+
+    <div class="pb-3">
+      <h1>Добавить новый</h1>
+    </div>
+
+    <div class="card mb-grid">
+      <div class="card-header">
+        <div class="card-header-title">Конвертация нового паспорта</div>
+      </div>
+      <div class="card-body">
+        <p>
+          The example below uses a flexbox utility to vertically center the contents and changes <code
+            class="highlighter-rouge">.col</code> to <code class="highlighter-rouge">.col-auto</code> so that your
+          columns only take up as much space as needed. Put another way, the column sizes itself based on the contents.
+        </p>
+        <form id="formElem" novalidate="">{% csrf_token %}
+          <div class="form-row">
+            <div class="col-md-6 mb-3">
+              {% comment %} <label class="form-label" for="validationCustom01">First name</label> {% endcomment %}
+              <div class="custom-file">
+                <input type="file" class="custom-file-input" id="customFile" name="list">
+                <label class="custom-file-label" for="customFile" id="fileLabel">Выберите файл</label>
+              </div>
+            </div>
+          </div>
+          <button class="btn btn-primary mr-2" type="submit">Загрузка</button>
+          <small class="text-muted">
+            Нажмите на кнопку для загрузки и конвертациии пасопрта
+          </small>
+        </form>
+
+        <h4>asdfasdfasdf</h4>
+
+        <div id="progress-wrapper">
+          <!-- <button id="progress-bar-trigger">Run</button> -->
+
+          <div id="progress-bar" class="progress-bar" style="width: 0%;" role="progressbar" aria-valuenow="0"
+            aria-valuemin="0" aria-valuemax="100">&nbsp;</div>
+
+          <!-- <div id="progress-bar" style="background-color: blue; width: 0%;">&nbsp;</div> -->
+          <div id="progress-bar-message">Waiting for progress to start...</div>
         </div>
 
-        <div class="card mb-grid">
-                  <div class="card-header">
-                    <div class="card-header-title">Конвертация нового паспорта</div>
-                  </div>
-                  <div class="card-body">
-                    <p>
-                      The example below uses a flexbox utility to vertically center the contents and changes <code class="highlighter-rouge">.col</code> to <code class="highlighter-rouge">.col-auto</code> so that your columns only take up as much space as needed. Put another way, the column sizes itself based on the contents.
-                    </p>
-                    <form id="formElem" novalidate="">{% csrf_token %}
-                      <div class="form-row">
-                        <div class="col-md-6 mb-3">
-                          {% comment %} <label class="form-label" for="validationCustom01">First name</label> {% endcomment %}
-                          <div class="custom-file">
-                      <input type="file" class="custom-file-input" id="customFile" name="list">
-                      <label class="custom-file-label" for="customFile" id="fileLabel">Выберите файл</label>
-                    </div>
-                        </div>
-                      </div>
-                      <button class="btn btn-primary mr-2" type="submit">Загрузка</button>
-                      <small class="text-muted">
-                        Нажмите на кнопку для загрузки и конвертациии пасопрта
-                      </small>
-                    </form>
-                  </div>
-                </div>
-        
+      </div>
+    </div>
+
 
     {% comment %} =========================================== {% endcomment %}
 
-    </div>
+  </div>
 </div>
 
 
@@ -51,7 +66,7 @@
 {% block scripts %}
 <script>
 
-formElem.onsubmit = async (e) => {
+  formElem.onsubmit = async (e) => {
     e.preventDefault();
 
     let response = await fetch('search', {
@@ -61,16 +76,58 @@ formElem.onsubmit = async (e) => {
 
     let result = await response.json()
 
-    alert("Загрузка завершена");
-    
+    // alert("Загрузка завершена");
+    updateProgress(progressUrl);
   };
 
-$("#customFile").change(function() {
-  filename = this.files[0].name
-  console.log(filename)
-  
-  document.getElementById('fileLabel').innerHTML = filename
-});
+  $("#customFile").change(function () {
+    filename = this.files[0].name
+    console.log(filename)
+
+    document.getElementById('fileLabel').innerHTML = filename
+  });
+
+  var progressUrl = '/task_status';  // django template usage
+
+  function updateProgress(progressUrl) {
+    fetch(progressUrl).then(function (response) {
+      response.json().then(function (data) {
+        // update the appropriate UI components
+        var bar = document.getElementById("progress-bar");
+        var barMessage = document.getElementById("progress-bar-message");
+
+        setTimeout(rerenderProgress, 500, bar, barMessage, {
+          percent: data.state,
+          current: data.state,
+          total: 100
+        })
+
+        if (data.state !== 100){
+          setTimeout(updateProgress, 500, progressUrl)
+        }
+      });
+    });
+  }
+
+
+  function rerenderProgress(progressBarElement, progressBarMessageElement, progress) {
+    progressBarElement.style.width = progress.percent + "%";
+    progressBarMessageElement.innerHTML = progress.current + ' of ' + progress.total + ' processed.';
+  }
+
+  var trigger = document.getElementById('progress-bar-trigger');
+  trigger.addEventListener('click', function (e) {
+    // var bar = document.getElementById("progress-bar");
+    // var barMessage = document.getElementById("progress-bar-message");
+    // for (var i = 0; i < 11; i++) {
+    //   setTimeout(updateProgress, 500 * i, bar, barMessage, {
+    //     percent: 10 * i,
+    //     current: 10 * i,
+    //     total: 100
+    //   })
+    // }
+    updateProgress(progressUrl);
+  })
 
 </script>
 {% endblock scripts %}

@@ -84,6 +84,8 @@ from django.core.files.storage import FileSystemStorage
 
 import json
 
+counter = 10
+
 def loadPassport(request):
     if request.method == 'POST':
         for filename, file in request.FILES.items():
@@ -98,3 +100,20 @@ def loadPassport(request):
     
     dumps = json.dumps({"json":"obj"})
     return HttpResponse(dumps);
+
+def update():
+    global counter
+    if counter < 100:
+        counter += 10
+    else:
+        counter = 0
+    pass
+
+def get_progress(request):
+    response_data = {
+        'state': counter,
+        'details': 'Hole',
+    }
+    update()
+    print('counter = ', counter)
+    return HttpResponse(json.dumps(response_data), content_type='application/json')
