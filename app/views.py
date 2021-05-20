@@ -20,8 +20,7 @@ from .tasks import go_to_sleep
 
 class IndexView(View):
     def get(self, request):
-        go_to_sleep.delay(5)
-        return render(request, "index.html", {})
+        return render(request, "index.html")
 
 
 class FormsView(View):
@@ -74,11 +73,7 @@ class PassportIDConcreteView(View):
 
 class PasslortLoadView(View):
     def get(self, request):
-        if 'list' in request.POST:
-            print('LOL')
-        else:
-            print(request.FILES)
-        return render(request, "pload.html");
+        return render(request, "pload.html")
 
 
 from django.core.files.storage import FileSystemStorage
@@ -100,7 +95,13 @@ def loadPassport(request):
     else:
         print("This is NOT request")
     
-    dumps = json.dumps({"json":"obj"})
+    full_path = DEFAULT_FILE_DIRECTORY + '/' + file.name
+
+    task = go_to_sleep.delay(1)
+    dumps = json.dumps({"json": task.task_id})
+
+
+    print("++++++++++++++++++++++++++++++++++")
     return HttpResponse(dumps);
 
 def update():

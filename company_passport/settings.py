@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'app',
     'django_celery_results',
-    'celery_progress',
+    # 'celery_progress',
 ]
 
 MIDDLEWARE = [
