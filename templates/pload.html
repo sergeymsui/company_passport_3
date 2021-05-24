@@ -51,10 +51,17 @@
       <script>
       var progressUrl = "";
 
-      function customResult(resultElement, result) {
+      function customResult(resultElement, result) { 
         $( resultElement ).append(
            $('<p>').text('Sum of all seconds is ' + result)
         );
+
+        if(result === "Done")
+        {
+          setTimeout(function(){
+            window.location.href = 'passports';
+          }, 5 * 1000);
+        }
       }
 
     </script>

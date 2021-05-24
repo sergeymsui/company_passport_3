@@ -168,10 +168,10 @@ class records(models.Model):
 class passports(models.Model):
     id = models.UUIDField('id', default=generate_uuid, primary_key=True)
     # company = models.TextField('Контора', default='', blank=True, null=True)
-    actual_d = models.DateField('Актуальная дата', default=datetime.date.today, blank=True, null=True)
+    actual_d = models.DateTimeField('Актуальная дата', default=datetime.datetime.now(), blank=True, null=True)
 
     def __str__(self):
-        return str(self.actual_d)
+        return str(self.id)
 
     class Meta:
         verbose_name = 'Паспорт'

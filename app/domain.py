@@ -598,11 +598,11 @@ class Parser:
                 )
         pass
 
-    def parse(self):
+    def parse(self, t_path):
         # Архив с данными
-        path_to_zip_file = '/tmp/1/archive.zip'
+        path_to_zip_file = t_path
         # Каталог для извлечения архива
-        directory_to_extract_to = '/tmp/1/' + uuid.uuid4().hex
+        directory_to_extract_to = '/tmp/e6fc5188457044ff8a5b55f999a42701/' + uuid.uuid4().hex
         # Извлекаем пофайлово
         with zipfile.ZipFile(path_to_zip_file, 'r') as zip_ref:
             zip_ref.extractall(directory_to_extract_to)
@@ -616,8 +616,10 @@ class Parser:
         # Генерим UUID пассспорта
         passport_id = uuid.uuid4()
 
+        passport_actual_d = datetime.datetime.now()
+
         # Заносим его в БД
-        passports.objects.create(id=passport_id)
+        passports.objects.create(id=passport_id, actual_d=passport_actual_d)
 
         for chapter in chapters:
             # Выбираем форму

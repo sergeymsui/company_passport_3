@@ -6,11 +6,21 @@ from time import sleep
 
 @shared_task(bind=True)
 def go_to_sleep(self, duration):
-    if duration == 0:
-        return 'None'
     progress_recorder = ProgressRecorder(self)
     for i in range(5):
         sleep(duration)
         progress_recorder.set_progress(i+1, 5, f'On iteratin {i}')
     return 'Done'
 
+from .domain import Parser
+
+@shared_task(bind=True)
+def go_to_parse(self, duration, t_path):
+    progress_recorder = ProgressRecorder(self)
+
+    p = Parser()
+    p.parse(t_path)
+    for i in range(5):
+        sleep(duration)
+        progress_recorder.set_progress(i+1, 5, f'On iteratin {i}')
+    return 'Done'

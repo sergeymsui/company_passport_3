@@ -6,7 +6,7 @@ from django.conf import settings
 from django.core.files.storage import default_storage
 
 from django.http.response import Http404, HttpResponseRedirect, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic import ListView
 from django.views.generic.base import View
 
@@ -16,7 +16,7 @@ from django.http import JsonResponse
 
 from .domain import Chapters, Worksheets, Parser, Passports, PassportIDConcrete
 
-from .tasks import go_to_sleep
+from .tasks import go_to_sleep, go_to_parse
 
 class IndexView(View):
     def get(self, request):
@@ -30,9 +30,6 @@ class FormsView(View):
 
 class PassportsView(View):
     def get(self, request):
-        # p = Parser()
-        # p.parse()
-
         passports = Passports()
         passports_data = passports.get()
         return render(request, "passports.html", {"passports_data": passports_data})
@@ -97,11 +94,11 @@ def loadPassport(request):
     
     full_path = DEFAULT_FILE_DIRECTORY + '/' + file.name
 
-    task = go_to_sleep.delay(1)
+    task = go_to_parse.delay(1, full_path)
     dumps = json.dumps({"json": task.task_id})
 
+    print("++++++++++++++++++++++++++++++++++", " ", full_path)
 
-    print("++++++++++++++++++++++++++++++++++")
     return HttpResponse(dumps);
 
 def update():
