@@ -3,7 +3,7 @@ from django.http.response import HttpResponse
 from django.shortcuts import render
 from django.views.generic.base import View
 
-from .domain import Chapters, Worksheets, Passports, PassportIDConcrete
+from .domain import Chapters, Worksheets, Passports, PassportIDConcrete, PassportReview
 from company_passport.settings import DEFAULT_FILE_DIRECTORY
 
 from .tasks import go_to_parse
@@ -14,7 +14,8 @@ import uuid
 # Основная страница
 class IndexView(View):
     def get(self, request):
-        return render(request, "index.html")
+        review = PassportReview()
+        return render(request, "index.html", {"passport_list": review.get()})
 
 # Страница форм
 class FormsView(View):
