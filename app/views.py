@@ -1,39 +1,35 @@
-
-from company_passport.settings import DEFAULT_FILE_DIRECTORY
-import os
-from django.conf import settings
-
-from django.core.files.storage import default_storage
-
-from django.http.response import Http404, HttpResponseRedirect, HttpResponse
-from django.shortcuts import render, redirect
-from django.views.generic import ListView
+from django.core.files.storage import FileSystemStorage
+from django.http.response import HttpResponse
+from django.shortcuts import render
 from django.views.generic.base import View
 
-# Create your views here.
-from django.db.models import Q
-from django.http import JsonResponse
+from .domain import Chapters, Worksheets, Passports, PassportIDConcrete
+from company_passport.settings import DEFAULT_FILE_DIRECTORY
 
-from .domain import Chapters, Worksheets, Parser, Passports, PassportIDConcrete
+from .tasks import go_to_parse
 
-from .tasks import go_to_sleep, go_to_parse
+import json
+import uuid
 
+# Основная страница
 class IndexView(View):
     def get(self, request):
         return render(request, "index.html")
 
-
+# Страница форм
 class FormsView(View):
     def get(self, request):
         cptrs = Chapters()
         return render(request, "forms.html", {"chapters": cptrs.get()})
 
+# Страница паспортов
 class PassportsView(View):
     def get(self, request):
         passports = Passports()
         passports_data = passports.get()
         return render(request, "passports.html", {"passports_data": passports_data})
 
+# Область таблиц
 class WorksheetView(View):
     def get(self, request, uuid):
         cptrs = Chapters()
@@ -45,6 +41,7 @@ class WorksheetView(View):
                                                   "wrks_rows": wrks_rows,
                                                   })
 
+# Страница паспортов по ID
 class PassportIDView(View):
     def get(self, request, uuid):
         cptrs = Chapters()
@@ -52,6 +49,7 @@ class PassportIDView(View):
                                                     "passport_uuid": uuid,
                                                     })
 
+# Область таблиц по ID паспорта
 class PassportIDConcreteView(View):
     def get(self, request, uuid, uuidp):
         cptrs = Chapters()
@@ -67,40 +65,37 @@ class PassportIDConcreteView(View):
                                                   "passport_uuid": uuid,
                                                   })
 
-
+# Страница загрузки паспорта
 class PasslortLoadView(View):
     def get(self, request):
         return render(request, "pload.html")
 
-
-from django.core.files.storage import FileSystemStorage
-# from .settings import DEFAULT_FILE_DIRECTORY
-
-import json
-
-counter = 10
-
+# Загрузка паспорта в файловую систему
 def loadPassport(request):
+    # директория загрузки
+    loadDirectory = DEFAULT_FILE_DIRECTORY + str(uuid.uuid4().hex)
     if request.method == 'POST':
         for filename, file in request.FILES.items():
-            print(filename, file, type(file))
-            # file_name = default_storage.save(filename, file)
-            fs = FileSystemStorage(location=DEFAULT_FILE_DIRECTORY) #defaults to   MEDIA_ROOT  
+            # print(filename, file, type(file))
+            fs = FileSystemStorage(location=loadDirectory)
+            # Сохранение в локальной директории
             filename = fs.save(file.name, file)
-            file_url = fs.url(file.name)
-
     else:
-        print("This is NOT request")
+        print("This is NOT POST request")
     
-    full_path = DEFAULT_FILE_DIRECTORY + '/' + file.name
-
+    # Полный путь к паспорту
+    full_path = loadDirectory + '/' + file.name
+    # Запуск процесса конвертации
     task = go_to_parse.delay(1, full_path)
+    # Возврат ID процесса конвертации
     dumps = json.dumps({"json": task.task_id})
+    # Возврат запроса с ответом
+    return HttpResponse(dumps)
 
-    print("++++++++++++++++++++++++++++++++++", " ", full_path)
+# counter - процент заполнения ProgressBar
+counter = 10
 
-    return HttpResponse(dumps);
-
+# Функция обновления счетчика
 def update():
     global counter
     if counter < 100:
@@ -109,13 +104,15 @@ def update():
         counter = 0
     pass
 
+# Статус процесса
 def get_progress(request):
     response_data = {
         'state': counter,
         'details': 'Hole',
     }
+    # Обновление счетчика
     update()
-    print('counter = ', counter)
+    # print('counter = ', counter)
     return HttpResponse(json.dumps(response_data), content_type='application/json')
 
 

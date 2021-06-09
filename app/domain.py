@@ -1,3 +1,4 @@
+from uuid import UUID
 from .models import *
 
 from django.db.models import Q
@@ -202,8 +203,6 @@ class Worksheets:
             if len(el.child) == 0:
                 original_columns = original_columns + 1
 
-        # print("original_columns = ", original_columns)
-
         # flag = False
 
         for el in app_rows:
@@ -342,8 +341,6 @@ class PassportIDConcrete:
             if len(el.child) == 0:
                 original_columns = original_columns + 1
 
-        # print("original_columns = ", original_columns)
-
         # flag = False
 
         for el in app_rows:
@@ -363,7 +360,6 @@ class PassportIDConcrete:
         l_dataset = dataset.objects.filter(Q(passport=p_uuid) & Q(id_chapter=m_uuid))
         l_record = records.objects.filter(id_chapter=m_uuid)
 
-        # print(len(l_dataset) , len(worksheet_rows_list))
         for n in range(len(worksheet_rows_list)):
             el = worksheet_rows_list[n]
             data = list()
@@ -417,21 +413,12 @@ class PassportIDConcrete:
                 for n in range(len(row_date)):
                     for d in row_date:
                         if d.record.id_column.id_code == n:
-                            print(d.data)
                             data.append({
                                         'value': d.data,
                                         'colspan': 1,
                                         'nrow': d.nrow,
                                     })
                 wrks_nsort_data.append(data)
-
-            # worksheet_row_data = sorted(wrks_nsort_data, key=wrks_nsort_data['nrow'])
-
-            # worksheet_row_data = {k: wrks_nsort_data[k] for k in sorted(wrks_nsort_data)}
-            # for i in range(len(wrks_nsort_data)):
-            #     for el in wrks_nsort_data:
-            #         if el == i:
-            #             worksheet_row_data.append(el.sort('nrow'))
 
             for i in range(len(wrks_nsort_data)):
                 for el in wrks_nsort_data:
@@ -451,18 +438,6 @@ class PassportIDConcrete:
                     'colspan': 1
                 })
 
-
-
-            # for t in range(5):
-            #     data = list()
-            #     dt = original_columns
-            #     for i in range(dt):
-            #         data.append({
-            #             'value': "LOL",
-            #             'colspan': 1
-            #         })
-            #     worksheet_row_data.append(data)
-
         return [title, worksheet_column_data, worksheet_row_data]
 
 
@@ -474,78 +449,78 @@ from os.path import isfile, join
 import xlrd
 import os
 
-# from openpyxl import load_workbook
-
-# import pandas as pd
 
 import threading
 
 from .enumerator import enumerator
 
-# def convertToXLS(m_path):
-#     if os.path.exists(m_path):
-#         directory = os.path.dirname(m_path)
-#         print('directory = ', directory)
-#         cmd = 'libreoffice7.1  --headless --convert-to xls --outdir ' + directory + '  ' + m_path
-#         os.system(cmd)
 
 
 from django.core.exceptions import ObjectDoesNotExist
 
-
 class Parser:
+    """
+    Парсер паспорта
+    """
     def __init__(self):
         pass
 
-    # Дописать цикл конвертера
     def convert(self, chapter_id, passport_m, tmp_file):
-
+        """
+        Метод конвертации
+        """
         if tmp_file == '':
             return
 
         # Достаем список всех записей
         record_list = records.objects.filter(id_chapter=chapter_id)
-
+        # Достаем список четвертей
         chapter_numbers = spr_chapters.objects.get(id=chapter_id)
+        # Достаем их номера
         c_number = chapter_numbers.number_f
+        # Приводим к формату из БД
         c_number = str(c_number).replace('/', '-')
-        print('c_number = ', c_number)
 
+        # Указываем путь к файлу со старым флрматом
         xls_file = str(tmp_file).replace('.xlsx', '.xls')
-        # print('xls_file = ', xls_file)
 
+        # Проверка на наличие файла
         if os.path.exists(xls_file):
-            pass
+            print('Файл не найден')
         else:
+            # Проверка наличия катфлога
             if os.path.exists(tmp_file):
+                # Достаем директорию
                 directory = os.path.dirname(tmp_file)
-                cmd = 'libreoffice7.1  --headless --convert-to xls --outdir ' + directory + '  ' + str(
-                    tmp_file).replace(' ', '\ ')
-                print('cmd = ', cmd)
-                _ex = os.system(cmd)
+                # Конвертим в старый формат через libreoffice
+                cmd = 'libreoffice7.1  --headless --convert-to xls --outdir ' + directory + '  ' + str(tmp_file).replace(' ', '\ ')
+                os.system(cmd)
 
-        # thread = threading.Thread(target=convertToXLS, args=(tmp_file,))
-        # # запускаем экземпляр конвертации формата
-        # thread.start()
-
-        print('tmp_file = ', tmp_file)
+        # Открываем полученный файл
         workbook = xlrd.open_workbook(xls_file)
 
+        # Достаем индекс таблицы
         sheet_index = workbook.sheet_names().index(c_number)
-        print('sheet_index = ', sheet_index)
 
+        # Достаем саму таблицу
         worksheet = workbook.sheet_by_index(sheet_index)
 
+        # Ручной процесс перемонжения матриц
         for el in record_list:
             col = el.id_column
 
             if el.id_row is None:
                 break
             else:
+                # Извлечение данных из таблицы по индексу
                 num_row = int(el.id_row.direction) - 1
                 num_col = enumerator[col.direction]
                 val = worksheet.cell(num_row, num_col).value
-                print('val = ', val)
+                
+                # Лог в консоль
+                print('value = ', val)
+                
+                # Заносим данные из таблицы в БД
                 dataset.objects.create(
                     record=el,
                     data=str(val),
@@ -553,19 +528,26 @@ class Parser:
                     id_chapter=chapter_numbers
                 )
             pass
-
+        
+        # Если таблица не содержит второго измерения
         if len(record_list) == 0:
             return
 
+        # Получаем стартовую строку с которой читаем данные
         start_row = record_list[0].id_column.startech
 
+        # Если стартовая строка отсутствует - выходим
         if start_row == -1 or start_row is None:
             return
 
+        # Находим число информативных строк
         num_data_row = worksheet.nrows - start_row
 
+        # Достаем данные из всех строк
         for i in range(num_data_row):
-
+            
+            # Проверка на пустоту таблицы
+            # Таблица предварительно пуста
             empty = True
             for el in record_list:
                 col = el.id_column
@@ -573,21 +555,29 @@ class Parser:
 
                 num_row = row
                 num_col = enumerator[col.direction]
+                # Если содержится хоть одна запись - выходим и приступаем к чтению данных
                 if str(worksheet.cell(num_row, num_col).value) is not '':
                     empty = False
                     break
-
+            
+            # Если таблица пуста - выходим из метода
             if empty:
                 break
-
+            
+            # Генерим UUID для записи
             l_uuid = uuid.uuid4()
+            # Цикл по всем записям
             for el in record_list:
+                # Находим индекс ячейки
                 col = el.id_column
                 row = start_row - 1 + i
 
+                # Достаем данные из ячейки
                 num_row = row
                 num_col = enumerator[col.direction]
                 val = worksheet.cell(num_row, num_col).value
+
+                # Кладем данные в БД
                 dataset.objects.create(
                     record=el,
                     data=str(val),
@@ -599,6 +589,10 @@ class Parser:
         pass
 
     def parse(self, t_path):
+        """
+        Метод парсинга паспорта
+        """
+
         # Архив с данными
         path_to_zip_file = t_path
         # Каталог для извлечения архива
@@ -631,7 +625,6 @@ class Parser:
                 file = files.objects.get(id_chapter=target_chapter.id)
                 # Выбираем файл
                 tmp_file = directory_to_extract_to + "/" + str(file)
-                # print('is exists tmp_file = ', tmp_file, os.path.exists(tmp_file))
             except ObjectDoesNotExist:
                 print("Either the blog or entry doesn't exist.")
 
@@ -639,8 +632,11 @@ class Parser:
             passport_m = passports.objects.get(id=passport_id)
 
             # Конвертируем // ЦЕЛЕВАЯ ЧЕТВЕРТЬ // ПАССПОРТ // файл для конвертации
+            # Конвертация в треде - во избежание подвисания основного процесса
             thread = threading.Thread(target=self.convert, args=(target_chapter.id, passport_m, tmp_file,))
+            # Запуск треда
             thread.start()
+            # Присоединение к потоку
             thread.join()
             pass
         pass
