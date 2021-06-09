@@ -3,14 +3,12 @@ from .models import *
 
 from django.db.models import Q
 
-# Модуль для работы с ZIP файлами
 import zipfile
 from os import listdir
 from os.path import isfile, join
 
 import xlrd
 import os
-
 
 import threading
 
@@ -655,7 +653,14 @@ def getDataSetByUUID(org_id, m_passport_id):
     m_records = records.objects.filter(id_row=m_row.id)[0]
     m_dataset = dataset.objects.filter(Q(passport=m_passport_id) & Q(record=m_records))[0]
     return m_dataset
-    
+
+
+from django.conf import settings
+import random
+
+staticDir = settings.BASE_DIR / 'static'
+
+imagesDir = staticDir / 'images'
 
 class PassportReview:
     def get(self):
@@ -670,14 +675,23 @@ class PassportReview:
             m_name = getDataSetByUUID('1299d9fa-db31-404f-bfaf-0a077e2d6bf9', m_passport.id)
             m_fullname = getDataSetByUUID('a0d14650-28f5-4da6-bd7e-74379b09c239', m_passport.id)
             m_okpo = getDataSetByUUID('4d82c619-8c14-4482-8875-8660ef33343e', m_passport.id)
+            
+            images = os.listdir(imagesDir)
+            max_val = len(images)
+            min_val = 0
+
+            r_num = int(random.uniform(min_val, max_val))
+
+            imagePath = 'static/images/' + images[r_num]
+
+            print("imagePath = ", imagePath)
+            
             m_list.append({
                 "id": str(m_passport.id),
                 "name": m_name.data + " (" + str(m_passport.actual_d.strftime("%Y-%m-%d-%H.%M.%S")) + ")",
                 "fullname": m_fullname.data,
                 "okpo": "ОКПО: " + m_okpo.data,
+                "image": str(imagePath),
             })
         
         return m_list
-
-        # for lp in passports_list:
-            # dataset_list = dataset.objects.filter(Q(passport=lp.id) & Q(id_chapter=m_uuid))

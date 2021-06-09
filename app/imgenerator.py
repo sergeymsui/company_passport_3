@@ -1,24 +1,13 @@
-
-
-import os
-
-import uuid
-
-
 from PIL import ImageDraw, Image
 import numpy as np
 import hashlib
 
 
-from django.conf import settings
-staticDir = settings.BASE_DIR / 'static'
-imagesDir = staticDir / 'images'
-
 def generate_avatar(avatar_size: int, nickname: str) -> None:
     background_color = '#f2f1f2'
     s = nickname
     format = 'png'
-    path = f'{imagesDir / nickname}.{format}'
+    path = f'{s}.{format}'
 
     # Варианты генерации
     ## 12x12 - 144бит - 18байт
@@ -63,11 +52,11 @@ def generate_avatar(avatar_size: int, nickname: str) -> None:
             if need_to_paint:
                 draw.point((x, y), main_color)
 
-    img.save(path, format)
+    # img.save(path, format)
     return img
 
-if len(os.listdir(imagesDir)) == 0:
-    for i in range(128):
-        m_uuid = str(uuid.uuid4().hex)
-        generate_avatar(36, m_uuid)
-    pass
+# if __name__ == "__main__":
+#     import sys
+#     args = sys.argv
+#     avatar_size = int(args[1])
+#     nickname = args[2]
